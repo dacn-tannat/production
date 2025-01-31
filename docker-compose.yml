@@ -1,0 +1,45 @@
+name: cse-lbds
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - '5432:5432'
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+
+  jobe:
+    image: trampgeek/jobeinabox
+    container_name: jobe
+    restart: always
+    ports:
+      - '4000:80'
+
+  backend:
+    build: ../server
+    container_name: server
+    restart: always
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+      - jobe
+    environment:
+      - DB_HOST=db
+      - DB_USER=postgres
+      - JOBE_URL=http://jobe/jobe/index.php/restapi/
+
+  frontend:
+    build: ../client
+    container_name: client
+    restart: always
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
+# volumes:
+#   postgres_data:
