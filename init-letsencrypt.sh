@@ -36,53 +36,53 @@ docker compose run --rm --entrypoint "\
 echo
 
 
-# # echo "### Starting services, then nginx ..."
-# # NginX MUST BE STARTED BEFORE GETTING REAL CERTIFICATION
-# # SO THAT WE HAVE TO START THE BACKEND SERVICE
-# # START ORDER: DB -> JOBE -> BACKEND -> FRONTEND (NginX)
-# docker compose -p cse-lbds up -d db
-# docker compose -p cse-lbds up -d jobe
-# docker compose -p cse-lbds up -d backend
-# docker compose -p cse-lbds up --force-recreate -d nginx
-# # echo
-
-
-# # step 2, get real certificate
-# # DELETE FAKE SSL CERTIFICATION (GENERATED ABOVE)
-# echo "### Deleting dummy certificate for $domains ..."
-# docker compose run --rm --entrypoint "\
-#   rm -Rf /etc/letsencrypt/live/$domains && \
-#   rm -Rf /etc/letsencrypt/archive/$domains && \
-#   rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
+# echo "### Starting services, then nginx ..."
+# NginX MUST BE STARTED BEFORE GETTING REAL CERTIFICATION
+# SO THAT WE HAVE TO START THE BACKEND SERVICE
+# START ORDER: DB -> JOBE -> BACKEND -> FRONTEND (NginX)
+docker compose -p cse-lbds up -d db
+docker compose -p cse-lbds up -d jobe
+docker compose -p cse-lbds up -d backend
+docker compose -p cse-lbds up --force-recreate -d nginx
 # echo
 
 
-# # REGISTRY DOMAIN NAME
-# echo "### Requesting Let's Encrypt certificate for $domains ..."
-# #Join $domains to -d args
-# domain_args=""
-# for domain in "${domains[@]}"; do
-#   domain_args="$domain_args -d $domain"
-# done
+# step 2, get real certificate
+# DELETE FAKE SSL CERTIFICATION (GENERATED ABOVE)
+echo "### Deleting dummy certificate for $domains ..."
+docker compose run --rm --entrypoint "\
+  rm -Rf /etc/letsencrypt/live/$domains && \
+  rm -Rf /etc/letsencrypt/archive/$domains && \
+  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
+echo
 
-# # Select appropriate email arg
-# case "$email" in
-#   "") email_arg="--register-unsafely-without-email" ;;
-#   *) email_arg="--email $email" ;;
-# esac
 
-# # Enable staging mode if needed
-# if [ $staging != "0" ]; then staging_arg="--staging"; fi
+# REGISTRY DOMAIN NAME
+echo "### Requesting Let's Encrypt certificate for $domains ..."
+#Join $domains to -d args
+domain_args=""
+for domain in "${domains[@]}"; do
+  domain_args="$domain_args -d $domain"
+done
 
-# docker compose run --rm --entrypoint "\
-#   certbot certonly --webroot -w /var/www/certbot \
-#     $staging_arg \
-#     $email_arg \
-#     $domain_args \
-#     --rsa-key-size $rsa_key_size \
-#     --agree-tos \
-#     --force-renewal" certbot
-# echo
+# Select appropriate email arg
+case "$email" in
+  "") email_arg="--register-unsafely-without-email" ;;
+  *) email_arg="--email $email" ;;
+esac
 
-# echo "### Reloading nginx ..."
-# docker compose -p cse-lbds exec nginx nginx -s reload
+# Enable staging mode if needed
+if [ $staging != "0" ]; then staging_arg="--staging"; fi
+
+docker compose run --rm --entrypoint "\
+  certbot certonly --webroot -w /var/www/certbot \
+    $staging_arg \
+    $email_arg \
+    $domain_args \
+    --rsa-key-size $rsa_key_size \
+    --agree-tos \
+    --force-renewal" certbot
+echo
+
+echo "### Reloading nginx ..."
+docker compose -p cse-lbds exec nginx nginx -s reload

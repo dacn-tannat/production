@@ -39,7 +39,11 @@ chmod +x init-letsencrypt.sh
 bash init-letsencrypt.sh
 ```
 
-If successful, a `certbot/` directory will be created within `production/`.
+Note:
+
+- Make sure that the value of the `staging` variable in line 10 is `0` in the production environment.
+- Also, line 39 to the end of the file must be uncommented.
+- If successful, a `certbot/` directory will be created within `production/`.
 
 ### 5. Start the System
 
