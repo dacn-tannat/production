@@ -39,11 +39,12 @@ chmod +x init-letsencrypt.sh
 bash init-letsencrypt.sh
 ```
 
-Note:
+Please make sure that, at the production environment:
 
-- Make sure that the value of the `staging` variable in line 10 is `0` in the production environment.
-- Also, line 39 to the end of the file must be uncommented.
-- If successful, a `certbot/` directory will be created within `production/`.
+- The value of the `staging` variable in line 10 is `0` in the production environment.
+- Line 39 to the end of the file must be uncommented, which is the step to delete the fake SSL certificate, start nginx to create a real SSL certificate to register the domain name.
+
+If successful, a `certbot/` directory will be created within `production/`.
 
 ### 5. Start the System
 
