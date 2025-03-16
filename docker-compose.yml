@@ -60,6 +60,7 @@ services:
       - DB_HOST=db
       - DB_USER=postgres
       - JOBE_URL=http://jobe/jobe/index.php/restapi/
+      - GOOGLE_REDIRECT_URI=https://cse-lbds.site/auth/google/callback
 volumes:
   postgres_data:
 
