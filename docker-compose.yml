@@ -33,7 +33,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
+      POSTGRES_PASSWORD: duyanhngunhucho
     ports:
       - '5432:5432'
     volumes:
@@ -58,7 +58,6 @@ services:
       - jobe
     environment:
       - DB_HOST=db
-      - DB_USER=postgres
       - JOBE_URL=http://jobe/jobe/index.php/restapi/
       - GOOGLE_REDIRECT_URI=https://cse-lbds.site/auth/google/callback
 volumes:
